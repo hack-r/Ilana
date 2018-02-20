@@ -40,7 +40,7 @@ python3 -m venv env
 env/bin/python -m pip install --upgrade pip setuptools wheel
 source env/bin/activate
 
-pip install -r /home/pi/GassistPi/Requirements/GassistPi-pip-requirements.txt
+pip install -r /home/pi/Desktop/Ilana/Requirements/Ilana-pip-requirements.txt
 
 pip install google-assistant-library==0.1.0
 pip install google-assistant-grpc==0.1.0
