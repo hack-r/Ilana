@@ -1,14 +1,14 @@
 [Unit]
-Description=Google Assistant-Pushbutton
+Description=Google Assistant
 Wants=network-online.target
 After=network-online.target
+
 
 [Service]
 Environment=VIRTUAL_ENV=/home/pi/env
 Environment=PATH=/home/pi/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-ExecStart=/home/pi/env/bin/python -u /home/pi/GassistPi/src/pushbutton.py --project-id 'project-id'  --device-model-id 'saved-model-id'
-
-WorkingDirectory=/home/pi/
+ExecStart=/home/pi/env/bin/python -u /home/pi/Desktop/Ilana/src/stopbutton.py
+WorkingDirectory=/home/pi/Desktop/
 StandardOutput=inherit
 StandardError=inherit
 Restart=always

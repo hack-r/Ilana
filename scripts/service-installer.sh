@@ -2,7 +2,7 @@
 #
 # Install systemd service files for running on startup.
 #
-# Copyright 2017 Google Inc.
+# Copyright 2018 Jason D. Miller.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,6 +27,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 repo_path="$PWD"
 
 for service in systemd/*.service; do
-  sed "s:/home/pi/GassistPi:${repo_path}:g" "$service" \
+  sed "s:/home/pi/Desktop/Ilana:${repo_path}:g" "$service" \
     > "/lib/systemd/system/$(basename "$service")"
 done
