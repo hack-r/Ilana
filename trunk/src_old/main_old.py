@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 #
 # Copyright (C) 2018 Jason D. Miller.
 # Forked from Google AIY and GassistPi
@@ -15,6 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from kodijson import Kodi, PLAYER_VIDEO
 import RPi.GPIO as GPIO
 import argparse
@@ -227,7 +227,7 @@ def register_device(project_id, credentials, device_model_id, device_id):
     r = session.get(device_url)
     print(device_url, r.status_code)
     if r.status_code == 404:
-        #print('Registering....', end='', flush=True)
+        print('Registering....', end='', flush=True)
         r = session.post(base_url, data=json.dumps({
             'id': device_id,
             'model_id': device_model_id,
@@ -261,7 +261,7 @@ def main():
         credentials = google.oauth2.credentials.Credentials(token=None,
                                                             **json.load(f))
     with Assistant(credentials, args.device_model_id) as assistant:
-        subprocess.Popen(["aplay", "/home/pi/Desktop/Ilana/sample-audio-files/Startup.wav"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.Popen(["aplay", "/home/pi/GassistPi/sample-audio-files/Startup.wav"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         events = assistant.start()
         print('device_model_id:', args.device_model_id + '\n' +
               'device_id:', assistant.device_id + '\n')
@@ -279,26 +279,26 @@ def main():
             if 'trigger'.lower() in str(usrcmd).lower():
                 assistant.stop_conversation()
                 Action(str(usrcmd).lower())
-            if ('stream'.lower() in str(usrcmd).lower()) or ('youtube'.lower() in str(usrcmd).lower()):
+            if 'stream'.lower() in str(usrcmd).lower():
                 assistant.stop_conversation()
                 os.system('pkill mpv')
-                if os.path.isfile("/home/pi/Desktop/Ilana/src/trackchange.py"):
-                    os.system('rm /home/pi/Desktop/Ilana/src/trackchange.py')
-                    os.system('echo "from actions import youtubeplayer\n\n" >> /home/pi/Desktop/Ilana/src/trackchange.py')
-                    os.system('echo "youtubeplayer()\n" >> /home/pi/Desktop/Ilana/src/trackchange.py')
+                if os.path.isfile("/home/pi/GassistPi/src/trackchange.py"):
+                    os.system('rm /home/pi/GassistPi/src/trackchange.py')
+                    os.system('echo "from actions import youtubeplayer\n\n" >> /home/pi/GassistPi/src/trackchange.py')
+                    os.system('echo "youtubeplayer()\n" >> /home/pi/GassistPi/src/trackchange.py')
                     if 'autoplay'.lower() in str(usrcmd).lower():
                         YouTube_Autoplay(str(usrcmd).lower())
                     else:
                         YouTube_No_Autoplay(str(usrcmd).lower())
                 else:
-                    os.system('echo "from actions import youtubeplayer\n\n" >> /home/pi/Desktop/Ilana/src/trackchange.py')
-                    os.system('echo "youtubeplayer()\n" >> /home/pi/Desktop/Ilana/src/trackchange.py')
+                    os.system('echo "from actions import youtubeplayer\n\n" >> /home/pi/GassistPi/src/trackchange.py')
+                    os.system('echo "youtubeplayer()\n" >> /home/pi/GassistPi/src/trackchange.py')
                     if 'autoplay'.lower() in str(usrcmd).lower():
                         YouTube_Autoplay(str(usrcmd).lower())
                     else:
                         YouTube_No_Autoplay(str(usrcmd).lower())
 
-            if ('stop'.lower() in str(usrcmd).lower()) or ('quit'.lower() in str(usrcmd).lower()) or ('turn off'.lower() in str(usrcmd).lower()):
+            if 'stop'.lower() in str(usrcmd).lower():
                 stop()
             if 'radio'.lower() in str(usrcmd).lower():
                 assistant.stop_conversation()
@@ -405,8 +405,8 @@ def main():
             if 'google music'.lower() in str(usrcmd).lower():
                 assistant.stop_conversation()
                 os.system('pkill mpv')
-                if os.path.isfile("/home/pi/Desktop/Ilana/src/trackchange.py"):
-                    os.system('rm /home/pi/Desktop/Ilana/src/trackchange.py')
+                if os.path.isfile("/home/pi/GassistPi/src/trackchange.py"):
+                    os.system('rm /home/pi/GassistPi/src/trackchange.py')
                     gmusicselect(str(usrcmd).lower())
                 else:
                     gmusicselect(str(usrcmd).lower())
