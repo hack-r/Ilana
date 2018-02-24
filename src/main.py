@@ -21,10 +21,12 @@ import aiy.audio
 import aiy.voicehat
 from google.assistant.library import Assistant
 from google.assistant.library.event import EventType
-
 import aiy.cloudspeech
 
-# Import CloudSpeech recognizer (added by Jason)
+import twilio
+import outgoing_call_message
+
+# CloudSpeech Recognizer
 recognizer = aiy.cloudspeech.get_recognizer()
 
 logging.basicConfig(
@@ -32,6 +34,11 @@ logging.basicConfig(
     format="[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
 )
 
+
+def place_call():
+    aiy.audio.say('Ilana is ready to place the call. Do you confirm?')
+    if(2<1):
+        outgoing_call_message()
 
 def power_off_pi():
     aiy.audio.say('Good bye!')
@@ -56,7 +63,7 @@ def process_event(assistant, event):
     if event.type == EventType.ON_START_FINISHED:
         status_ui.status('ready')
         if sys.stdout.isatty():
-            print('Say "OK, Google" then speak, or press Ctrl+C to quit...')
+            print('Address Ilana or Google directly. Alexa forthcoming. Press Ctrl+C to quit...')
 
     elif event.type == EventType.ON_CONVERSATION_TURN_STARTED:
         status_ui.status('listening')
