@@ -24,7 +24,7 @@ from google.assistant.library.event import EventType
 import aiy.cloudspeech
 
 import twilio
-import outgoing_call_message
+import outgoing_call_message_server
 
 # CloudSpeech Recognizer
 recognizer = aiy.cloudspeech.get_recognizer()
