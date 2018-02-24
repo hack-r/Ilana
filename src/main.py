@@ -14,6 +14,7 @@ It is available for Raspberry Pi 2/3 only; Pi Zero is not supported.
 import logging
 import subprocess
 import sys
+import os
 
 import aiy
 import aiy.assistant.auth_helpers
@@ -24,7 +25,7 @@ from google.assistant.library.event import EventType
 import aiy.cloudspeech
 
 import twilio
-import outgoing_call_message_server
+#import outgoing_call_message_server
 
 # CloudSpeech Recognizer
 recognizer = aiy.cloudspeech.get_recognizer()
