@@ -11,18 +11,37 @@ The Google Assistant Library can be installed with:
 It is available for Raspberry Pi 2/3 only; Pi Zero is not supported.
 """
 
+from gmusicapi import Mobileclient
 from google.assistant.library import Assistant
 from google.assistant.library.event import EventType
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from googletrans import Translator
+from gtts import gTTS
+import RPi.GPIO as GPIO
+import aftership
 import aiy
 import aiy.assistant.auth_helpers
 import aiy.audio
 import aiy.cloudspeech
 import aiy.voicehat
+import feedparser
+import json
 import logging
+import os
+import os.path
+import pafy
+import pychromecast
+import re
+import requests
+import subprocess
 import subprocess
 import sys
 import threading
+import time
 import twilio
+import urllib.request
+
 
 # CloudSpeech Recognizer
 recognizer = aiy.cloudspeech.get_recognizer()
@@ -90,8 +109,6 @@ class MyAssistant(object):
             recognizer.expect_phrase('Ilana')
 
             while True:
-                print('Press the button and speak')
-                button.wait_for_press()
                 print('Listening...')
                 text = recognizer.recognize()
                 if text is None:
@@ -144,4 +161,4 @@ def main():
 
 
 if __name__ == '__main__':
-main()
+    main()
