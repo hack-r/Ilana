@@ -89,28 +89,28 @@ class MyAssistant(object):
             recognizer = aiy.cloudspeech.get_recognizer()
             recognizer.expect_phrase('Ilana')
 
-                while True:
-                    print('Press the button and speak')
-                    button.wait_for_press()
-                    print('Listening...')
-                    text = recognizer.recognize()
-                    if text is None:
-                        print('Sorry, I did not hear you.')
-                    else:
-                        print('You said "', text, '"')
-                        if 'Ilana turn on the LED' in text:
-                            led.set_state(aiy.voicehat.LED.ON)
-                        elif 'Ilana turn off the LED' in text:
-                            led.set_state(aiy.voicehat.LED.OFF)
-                        elif 'Ilana blink' in text:
-                            led.set_state(aiy.voicehat.LED.BLINK)
-                        elif 'Ilana repeat after me' in text:
-                            to_repeat = text.replace('repeat after me', '', 1)
-                            aiy.audio.say(to_repeat)
-                        elif 'Ilana self destruct' in text:
-                            os._exit(0)
-                        elif 'Ialana tell Google' in text:
-                            self._ilana()
+            while True:
+                print('Press the button and speak')
+                button.wait_for_press()
+                print('Listening...')
+                text = recognizer.recognize()
+                if text is None:
+                    print('Sorry, I did not hear you.')
+                else:
+                    print('You said "', text, '"')
+                    if 'Ilana turn on the LED' in text:
+                        led.set_state(aiy.voicehat.LED.ON)
+                    elif 'Ilana turn off the LED' in text:
+                        led.set_state(aiy.voicehat.LED.OFF)
+                    elif 'Ilana blink' in text:
+                        led.set_state(aiy.voicehat.LED.BLINK)
+                    elif 'Ilana repeat after me' in text:
+                        to_repeat = text.replace('repeat after me', '', 1)
+                        aiy.audio.say(to_repeat)
+                    elif 'Ilana self destruct' in text:
+                        os._exit(0)
+                    elif 'Ialana tell Google' in text:
+                        self._ilana()
 
             if sys.stdout.isatty():
                 print('Say "Speak to Ilana at your leisure...'
