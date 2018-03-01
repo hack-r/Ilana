@@ -1,2 +1,1 @@
-Flask>=0.12
-twilio~=6.0.0
+PyAudio==0.2.9

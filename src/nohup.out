@@ -1,0 +1,18 @@
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 287-627-066
+The 2 required args are message and route. Hopefully you gave me that...
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 287-627-066
+127.0.0.1 - - [24/Feb/2018 22:44:57] "GET /yaacov HTTP/1.1" 200 -
+127.0.0.1 - - [24/Feb/2018 22:44:57] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [24/Feb/2018 22:44:57] "GET /favicon.ico HTTP/1.1" 404 -
+Calling7329667499
+
+Voice logic URL:http://3ddc62e8.ngrok.io/yaacov
+CAa486ea0f2ec28b4d4c822e6ef2338a15
+127.0.0.1 - - [24/Feb/2018 22:47:53] "POST /yaacov HTTP/1.1" 200 -
+The 2 required args are message and route. Hopefully you gave me that...

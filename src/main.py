@@ -1,4 +1,17 @@
 #!/usr/bin/env python3
+# Copyright 2017 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 """Run a recognizer using the Google Assistant Library.
 
@@ -11,15 +24,15 @@ The Google Assistant Library can be installed with:
 It is available for Raspberry Pi 2/3 only; Pi Zero is not supported.
 """
 
-from gmusicapi import Mobileclient
+#from gmusicapi import Mobileclient
 from google.assistant.library import Assistant
 from google.assistant.library.event import EventType
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from googletrans import Translator
+#from googleapiclient.discovery import build
+#from googleapiclient.errors import HttpError
+#from googletrans import Translator
 from gtts import gTTS
 import RPi.GPIO as GPIO
-import aftership
+#import aftership
 import aiy
 import aiy.assistant.auth_helpers
 import aiy.audio
@@ -31,133 +44,138 @@ import logging
 import os
 import os.path
 import pafy
-import pychromecast
+#import pychromecast
 import re
 import requests
-import subprocess
 import subprocess
 import sys
 import threading
 import time
 import twilio
 import urllib.request
-
-
-# CloudSpeech Recognizer
-recognizer = aiy.cloudspeech.get_recognizer()
+import snowboydecoder
+import signal
 
 logging.basicConfig(
     level=logging.INFO,
     format="[%(asctime)s] %(levelname)s:%(name)s:%(message)s"
 )
 
+interrupted = False
 
-#def place_call():
-#    aiy.audio.say('Ilana is ready to place the call. Do you confirm?')
-#    if(2<1):
-#        outgoing_call_message()
 
+def signal_handler(signal, frame):
+    global interrupted
+    interrupted = True
+
+
+def interrupt_callback():
+    global interrupted
+    return interrupted
+    
+def launch_ilana():    
+    print("It worked")
+    recognizer = aiy.cloudspeech.get_recognizer()
+    aiy.audio.get_recorder().start()
+	
+    while True:
+        text = recognizer.recognize()
+        if 'tell google' in text:
+            tell_google()
+        if 'my ip' in text:
+            say_ip()
+        if 'reboot the system' or 'reboot system' in text:
+        	reboot_pi()
+        if 'who cut off who' in text:
+        	say_cut_off()
+        if 'who is right' in text:
+            say_jason_right()
+        #if '' in text:
+        #if '' in text:
+        #if '' in text:
+                
+        else:    
+            aiy.audio.say('You said ', text)
+    
+  
 def power_off_pi():
     aiy.audio.say('Good bye!')
-    subprocess.call('sudo shutdown now', shell=True)
+    #subprocess.call('sudo shutdown now', shell=True)
 
+def process_event(assistant, event):
+    status_ui = aiy.voicehat.get_status_ui()
+    if event.type == EventType.ON_START_FINISHED:
+        status_ui.status('ready')
+        if sys.stdout.isatty():
+            print('Say "OK, Google" then speak, or press Ctrl+C to quit...')
+
+    elif event.type == EventType.ON_CONVERSATION_TURN_STARTED:
+        status_ui.status('listening')
+
+    elif event.type == EventType.ON_RECOGNIZING_SPEECH_FINISHED and event.args:
+        print('You said:', event.args['text'])
+        text = event.args['text'].lower()
+        if text == 'power off':
+            assistant.stop_conversation()
+            power_off_pi()
+        elif text == 'reboot':
+            assistant.stop_conversation()
+            reboot_pi()
+        elif text == 'ip address':
+            assistant.stop_conversation()
+            say_ip()
+
+    elif event.type == EventType.ON_END_OF_UTTERANCE:
+        status_ui.status('thinking')
+
+    elif event.type == EventType.ON_CONVERSATION_TURN_FINISHED:
+        status_ui.status('ready')
+
+    elif event.type == EventType.ON_ASSISTANT_ERROR and event.args and event.args['is_fatal']:
+        sys.exit(1)
 
 def reboot_pi():
     aiy.audio.say('See you in a bit!')
-    subprocess.call('sudo reboot', shell=True)
+    #subprocess.call('sudo reboot', shell=True)
 
-
+def say_cut_off():
+    aiy.audio.say('She cut you off')
+    
 def say_ip():
     ip_address = subprocess.check_output("hostname -I | cut -d' ' -f1", shell=True)
     aiy.audio.say('My IP address is %s' % ip_address.decode('utf-8'))
+def say_jason_right():
+    aiy.audio.say('Objectively speaking, Jason is right. I would trust his wisdom.')
+    
+def tell_google():
+    with Assistant(credentials) as assistant:
+        for event in assistant.start():
+            process_event(assistant, event)	  
 
-class MyAssistant(object):
-    """An assistant that runs in the background.
-    The Google Assistant Library event loop blocks the running thread entirely.
-    To encase it in Ilana, we need to run the event loop in a separate
-    thread. Otherwise, the _ilana() method will never get a chance to
-    be invoked.
-    """
+# Capture model from argument
+if len(sys.argv) == 1:
+    print("Error: need to specify model name")
+    print("Usage: python ilana_snow.py ilana.pmdl")
+    sys.exit(-1)
 
-    def __init__(self):
-        self._task = threading.Thread(target=self._run_task)
-        self._can_start_conversation = False
-        self._assistant = None
+model = sys.argv[1]
 
-    def start(self):
-        """Starts the assistant.
-        Starts the assistant event loop and begin processing events.
-        """
-        self._task.start()
+# capture SIGINT signal, e.g., Ctrl+C
+signal.signal(signal.SIGINT, signal_handler)
 
-    def _run_task(self):
-        credentials = aiy.assistant.auth_helpers.get_assistant_credentials()
-        with Assistant(credentials) as assistant:
-            self._assistant = assistant
-            for event in assistant.start():
-                self._process_event(event)
+detector = snowboydecoder.HotwordDetector(model, sensitivity=0.5)
+print('Listening... Press Ctrl+C to exit')
 
-    def _process_event(self, event):
-        status_ui = aiy.voicehat.get_status_ui()
-        if event.type == EventType.ON_START_FINISHED:
-            status_ui.status('ready')
-            self._can_start_conversation = True
-
-            # Wait for a conversation to begin
-            # aiy.voicehat.get_button().on_press(self._ilana)
-            recognizer = aiy.cloudspeech.get_recognizer()
-            recognizer.expect_phrase('Ilana')
-
-            while True:
-                print('Listening...')
-                text = recognizer.recognize()
-                if text is None:
-                    print('Sorry, I did not hear you.')
-                else:
-                    print('You said "', text, '"')
-                    if 'Ilana turn on the LED' in text:
-                        led.set_state(aiy.voicehat.LED.ON)
-                    elif 'Ilana turn off the LED' in text:
-                        led.set_state(aiy.voicehat.LED.OFF)
-                    elif 'Ilana blink' in text:
-                        led.set_state(aiy.voicehat.LED.BLINK)
-                    elif 'Ilana repeat after me' in text:
-                        to_repeat = text.replace('repeat after me', '', 1)
-                        aiy.audio.say(to_repeat)
-                    elif 'Ilana self destruct' in text:
-                        os._exit(0)
-                    elif 'Ialana tell Google' in text:
-                        self._ilana()
-
-            if sys.stdout.isatty():
-                print('Say "Speak to Ilana at your leisure...'
-                      'Press Ctrl+C to quit...')
-
-        elif event.type == EventType.ON_CONVERSATION_TURN_STARTED:
-            self._can_start_conversation = False
-            status_ui.status('listening')
-
-        elif event.type == EventType.ON_END_OF_UTTERANCE:
-            status_ui.status('thinking')
-
-        elif event.type == EventType.ON_CONVERSATION_TURN_FINISHED:
-            status_ui.status('ready')
-            self._can_start_conversation = True
-
-        elif event.type == EventType.ON_ASSISTANT_ERROR and event.args and event.args['is_fatal']:
-            sys.exit(1)
-
-    def _ilana(self):
-        # Check if we can start a conversation. 'self._can_start_conversation'
-        # is False when either:
-        # 1. The assistant library is not yet ready; OR
-        # 2. The assistant library is already in a conversation.
-        if self._can_start_conversation:
-            self._assistant.start_conversation()
-
-
+# main loop
 def main():
-    MyAssistant().start()
+    credentials = aiy.assistant.auth_helpers.get_assistant_credentials()
+    
+    detector.start(detected_callback=launch_ilana,
+        interrupt_check=interrupt_callback,
+        sleep_time=0.03)
+
+    detector.terminate()
+
 
 
 if __name__ == '__main__':
