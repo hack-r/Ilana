@@ -150,7 +150,9 @@ class HotwordDetector(object):
             channels=self.detector.NumChannels(),
             rate=self.detector.SampleRate(),
             frames_per_buffer=2048,
-            stream_callback=audio_callback)
+            stream_callback=audio_callback
+            #,input_device_index=0
+            )
 
         if interrupt_check():
             logger.debug("detect voice return")
