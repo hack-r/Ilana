@@ -1,4 +1,4 @@
-
+June 17, 2023 - I'm making some of my old pre-GPT AI Assistant code public in anticipation of merging it with my newer GPT-based projects (e.g. [GPT-Swarm](https://github.com/hack-r/GPT-Swarm)), [Ilana-themed prompt engineering](https://github.com/hack-r/Ilana1), 
 
 
 # Features (All features are applicable to all Pi boards, unless and otherwise mentioned):  
