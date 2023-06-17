@@ -1,5 +1,6 @@
 June 17, 2023 - I'm making some of my old pre-GPT AI Assistant code public in anticipation of merging it with my newer GPT-based projects (e.g. [GPT-Swarm](https://github.com/hack-r/GPT-Swarm)), and [Ilana-themed prompt engineering](https://github.com/hack-r/Ilana1). This old code was forked from public projects and I haven't sorted through it yet, at the time of writing. There's also some additional old Ilana code I'll add if I can find it on storage media.
 
+I probably have some old passwords or IP's somewhere in here, but don't get too excited - if so they're all sufficiently ancient to be irrelevant. 
 
 # Features (All features are applicable to all Pi boards, unless and otherwise mentioned):  
 **1.   Headless auto start on boot.**    
